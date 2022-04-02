@@ -3,9 +3,12 @@ package com.nisecoder.gradle.plugin
 import com.nisecoder.gradle.plugin.nodejs.NodeBinaryTypeSelector
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
+import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.registerIfAbsent
 
 @Suppress("unused")
@@ -16,17 +19,24 @@ class NodeJsPlugin: Plugin<Project> {
      * @param target The target object
      */
     override fun apply(target: Project): Unit = target.run {
-        extensions.create<NodeExtension>("nodejs").also {
+        val nodeExtension = extensions.create<NodeExtension>("nodejs").also {
             it.version.convention("v16.14.2")
         }
 
         val binaryType = NodeBinaryTypeSelector.select()
 
         val nodeCacheDir = gradle.gradleUserHomeDir.resolve("node")
-        gradle.sharedServices.registerIfAbsent("nodeProvisioning", NodeProvisioningService::class) {
+        val nodeProvisioningServiceProvider = gradle.sharedServices.registerIfAbsent("nodeProvisioning", NodeProvisioningService::class) {
             parameters {
                 nodeBinaryType.set(binaryType)
                 nodeCachePath.set(nodeCacheDir)
+            }
+        }
+
+        tasks {
+            register<NodeVersionTask>("nodeVersion") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
             }
         }
     }

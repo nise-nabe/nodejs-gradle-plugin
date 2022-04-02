@@ -38,3 +38,14 @@ idea {
         }
     }
 }
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation(gradleTestKit())
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.assertj:assertj-core:3.22.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
