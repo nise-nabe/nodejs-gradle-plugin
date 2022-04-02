@@ -4,10 +4,12 @@ import org.jetbrains.gradle.ext.packagePrefix
 plugins {
     java
     `maven-publish`
-    `java-gradle-plugin`
     id("com.gradle.plugin-publish")
 
     id("org.jetbrains.gradle.plugin.idea-ext")
+
+    `kotlin-dsl-base`
+    `java-gradle-plugin`
 
     kotlin("jvm")
 }
