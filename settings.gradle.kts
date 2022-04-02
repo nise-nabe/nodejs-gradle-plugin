@@ -7,6 +7,7 @@ pluginManagement {
     }
     plugins {
         id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.3"
+        id("com.gradle.plugin-publish") version "0.17.0"
     }
 }
 
@@ -18,6 +19,8 @@ dependencyResolutionManagement {
 }
 
 includeBuild("./build-logic")
+
+include("nodejs-gradle-plugin")
 
 for (project in rootProject.children) {
     val projectPath = file("subprojects/${project.name}")
