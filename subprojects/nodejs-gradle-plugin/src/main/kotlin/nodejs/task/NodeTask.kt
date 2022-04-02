@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 abstract class NodeTask: Exec() {
     init {
-        group = "node"
+        group = "nodejs"
     }
 
     @get:Internal
