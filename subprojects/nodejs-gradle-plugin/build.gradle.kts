@@ -8,6 +8,8 @@ plugins {
     id("com.gradle.plugin-publish")
 
     id("org.jetbrains.gradle.plugin.idea-ext")
+
+    kotlin("jvm")
 }
 
 pluginBundle {
@@ -28,8 +30,9 @@ gradlePlugin {
 idea {
     module {
         settings {
-            packagePrefix["src/main/kotlin"] = "com.nisecoder.gradle.plugin"
-            packagePrefix["src/test/kotlin"] = "com.nisecoder.gradle.plugin"
+            val packageName = "com.nisecoder.gradle.plugin"
+            packagePrefix["src/main/kotlin"] = packageName
+            packagePrefix["src/test/kotlin"] = packageName
         }
     }
 }
