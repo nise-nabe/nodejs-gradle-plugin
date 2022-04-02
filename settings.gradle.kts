@@ -17,6 +17,8 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("./build-logic")
+
 for (project in rootProject.children) {
     val projectPath = file("subprojects/${project.name}")
 
