@@ -5,6 +5,7 @@ import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackEnableTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -49,6 +50,10 @@ class NodeJsPlugin: Plugin<Project> {
             }
 
             register<CorepackEnableTask>("corepackEnable") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
+            }
+            register<CorepackDisableTask>("corepackDisable") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }
