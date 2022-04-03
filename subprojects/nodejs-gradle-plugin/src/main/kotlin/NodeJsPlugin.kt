@@ -26,7 +26,7 @@ class NodeJsPlugin: Plugin<Project> {
      */
     override fun apply(target: Project): Unit = target.run {
         val nodeExtension = extensions.create<NodeExtension>("nodejs").also {
-            it.version.convention("v16.14.2")
+            it.nodeVersion.convention("v16.14.2")
             it.installationDir.set(gradle.gradleUserHomeDir.resolve("nodejs"))
         }
 
@@ -39,7 +39,7 @@ class NodeJsPlugin: Plugin<Project> {
 
         fun ProvisionedNodeTask.prepare() {
             nodeProvisioningService.set(nodeProvisioningServiceProvider)
-            nodeVersion.set(nodeExtension.version)
+            nodeVersion.set(nodeExtension.nodeVersion)
         }
 
         // node tasks

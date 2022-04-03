@@ -5,6 +5,6 @@ import org.gradle.api.provider.Property
 
 
 interface NodeExtension {
-    val version: Property<String>
+    val nodeVersion: Property<String>
     val installationDir: DirectoryProperty
 }
