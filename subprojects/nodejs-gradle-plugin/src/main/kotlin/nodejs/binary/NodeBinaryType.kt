@@ -13,6 +13,6 @@ enum class NodeBinaryType(val osName: String, val arch: String, val ext: NodeBin
     Mac64("darwin", "x64", TarGz),
     MacArm64("darwin", "arm64", TarGz),
     Linux64("linux", "x64", TarGz),
-    LinuxArmv7("linux", "armv7l", TarGz),
-    LinuxArmv8("linux", "armv64", TarGz),
+    LinuxArmV7("linux", "arm" + "v7l", TarGz),
+    LinuxArmV8("linux", "arm" + "v64", TarGz),
 }
