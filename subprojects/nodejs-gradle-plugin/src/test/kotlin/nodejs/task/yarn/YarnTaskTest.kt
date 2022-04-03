@@ -50,5 +50,16 @@ class YarnTaskTest {
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
         assertThat(testProjectDir.resolve("yarn.lock")).exists()
+
+
+        val rerunBuildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":yarnInstall")
+            .build()
+
+        val rerunTaskResult = rerunBuildResult.task(":yarnInstall")
+        assertNotNull(rerunTaskResult)
+        assertThat(rerunTaskResult.outcome).isIn(TaskOutcome.UP_TO_DATE)
     }
 }

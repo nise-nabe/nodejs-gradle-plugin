@@ -50,5 +50,15 @@ class NpmTaskTest {
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
         assertThat(testProjectDir.resolve("package-lock.json")).exists()
+
+        val rerunBuildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":npmInstall")
+            .build()
+
+        val rerunTaskResult = rerunBuildResult.task(":npmInstall")
+        assertNotNull(rerunTaskResult)
+        assertThat(rerunTaskResult.outcome).isIn(TaskOutcome.UP_TO_DATE)
     }
 }
