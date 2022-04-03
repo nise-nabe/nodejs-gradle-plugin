@@ -3,6 +3,7 @@ package com.nisecoder.gradle.plugin
 import com.nisecoder.gradle.plugin.nodejs.NodeBinaryTypeSelector
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
+import com.nisecoder.gradle.plugin.nodejs.task.CorepackEnableTask
 import com.nisecoder.gradle.plugin.nodejs.task.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NpmVersionTask
@@ -46,6 +47,11 @@ class NodeJsPlugin: Plugin<Project> {
         // corepack tasks
         tasks {
             register<CorepackVersionTask>("corepackVersion") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
+            }
+
+            register<CorepackEnableTask>("corepackEnable") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }
