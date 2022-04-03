@@ -18,7 +18,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val nodeCachePath: DirectoryProperty
     }
 
-    fun provision(fileOperations: FileOperations, nodeVersion: String): NodeBinary {
+    fun provision(fileOperations: FileOperations, nodeVersion: String): NodePath {
         val nodeCacheDir = parameters.nodeCachePath.get().asFile.also {
             if (!it.exists()) {
                 it.mkdirs()
@@ -49,15 +49,16 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         }
 
         val resolver = NodeBinaryPathResolver(installationDir, parameters.nodeBinaryType.get())
-        return resolver.toNodeBinary()
+        return resolver.toNodePath()
     }
 
-    private fun NodeBinaryPathResolver.toNodeBinary(): NodeBinary {
-        return NodeBinary(
+    private fun NodeBinaryPathResolver.toNodePath(): NodePath {
+        return NodePath(
             installPath,
             resolveNode(),
             resolveNpm(),
             resolveNpx(),
+            resolveCorepack(),
         )
     }
 

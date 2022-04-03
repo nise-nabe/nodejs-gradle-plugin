@@ -29,4 +29,12 @@ class NodeBinaryPathResolver(
             installPath.resolve("bin").resolve("npx")
         }
     }
+
+    fun resolveCorepack(): Path {
+        return if (nodeBinaryType.osName == "win") {
+            installPath.resolve("corepack.cmd")
+        } else {
+            installPath.resolve("bin").resolve("corepack")
+        }
+    }
 }

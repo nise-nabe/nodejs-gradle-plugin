@@ -3,7 +3,9 @@ package com.nisecoder.gradle.plugin
 import com.nisecoder.gradle.plugin.nodejs.NodeBinaryTypeSelector
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
+import com.nisecoder.gradle.plugin.nodejs.task.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.NpmVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
@@ -35,6 +37,14 @@ class NodeJsPlugin: Plugin<Project> {
 
         tasks {
             register<NodeVersionTask>("nodeVersion") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
+            }
+            register<CorepackVersionTask>("corepackVersion") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
+            }
+            register<NpmVersionTask>("npmVersion") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }

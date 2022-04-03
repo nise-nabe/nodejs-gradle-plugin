@@ -43,7 +43,48 @@ internal class NodeJsPluginTest {
         val taskResult = buildResult.task(":nodeVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator())).contains("v16.14.2")
+        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains("v16.14.2")
+    }
+
+    @Test
+    fun corepackVersion() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":corepackVersion")
+            .build()
+
+        val taskResult = buildResult.task(":corepackVersion")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains("0.10.0")
+    }
+
+    @Test
+    fun npmVersion() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":npmVersion")
+            .build()
+
+        val taskResult = buildResult.task(":npmVersion")
+        println(buildResult.output)
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains("8.5.0")
     }
 
     private fun File.writeKotlin(@Language("gradle.kts") src: String) {
