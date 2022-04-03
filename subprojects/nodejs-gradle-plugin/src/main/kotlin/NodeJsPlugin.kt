@@ -8,6 +8,7 @@ import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.base.ProvisionedNodeTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -73,6 +74,15 @@ class NodeJsPlugin: Plugin<Project> {
         // yarn tasks
         tasks {
             register<YarnVersionTask>("yarnVersion") {
+                prepare()
+
+                dependsOn(corepackEnableTask)
+            }
+        }
+
+        // pnpm tasks
+        tasks {
+            register<PnpmVersionTask>("pnpmVersion") {
                 prepare()
 
                 dependsOn(corepackEnableTask)

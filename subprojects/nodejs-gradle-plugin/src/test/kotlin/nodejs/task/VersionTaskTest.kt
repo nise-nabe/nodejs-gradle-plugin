@@ -16,6 +16,7 @@ internal class VersionTaskTest {
         const val NPM_VERSION = "8.5.0"
         const val COREPACK_VERSION = "0.10.0"
         const val YARN_VERSION = "1.22.15"
+        const val PNPM_VERSION = "6.11.0"
     }
 
     @TempDir
@@ -50,7 +51,7 @@ internal class VersionTaskTest {
         val taskResult = buildResult.task(":nodeVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(NODE_VERSION)
+        assertThat(buildResult.output.splitLine()).contains(NODE_VERSION)
     }
 
 
@@ -71,7 +72,7 @@ internal class VersionTaskTest {
         val taskResult = buildResult.task(":npmVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(NPM_VERSION)
+        assertThat(buildResult.output.splitLine()).contains(NPM_VERSION)
     }
 
     @Test
@@ -91,7 +92,7 @@ internal class VersionTaskTest {
         val taskResult = buildResult.task(":corepackVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(COREPACK_VERSION)
+        assertThat(buildResult.output.splitLine()).contains(COREPACK_VERSION)
     }
 
     @Test
@@ -111,6 +112,28 @@ internal class VersionTaskTest {
         val taskResult = buildResult.task(":yarnVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(YARN_VERSION)
+        assertThat(buildResult.output.splitLine()).contains(YARN_VERSION)
     }
+
+    @Test
+    fun pnpmVersion() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":pnpmVersion")
+            .build()
+
+        val taskResult = buildResult.task(":pnpmVersion")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.splitLine()).contains(PNPM_VERSION)
+    }
+
+    private fun String.splitLine() = split(System.lineSeparator()).map { it.trim() }
 }
