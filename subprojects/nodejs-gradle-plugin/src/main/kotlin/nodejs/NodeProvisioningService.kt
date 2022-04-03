@@ -19,11 +19,11 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     private val nodeBinaryType: NodeBinaryType = NodeBinaryTypeSelector.select()
 
     interface Params: BuildServiceParameters {
-        val nodeCachePath: DirectoryProperty
+        val nodeInstallationPath: DirectoryProperty
     }
 
     fun provision(fileOperations: FileOperations, nodeVersion: String): NodePath {
-        val nodeCacheDir = parameters.nodeCachePath.get().asFile.also {
+        val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
             if (!it.exists()) {
                 it.mkdirs()
             }
