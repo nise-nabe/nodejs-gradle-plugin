@@ -4,9 +4,10 @@ import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryArchiveType.Zip
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryPathResolver
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryType
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryTypeSelector
+import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileTree
-import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.net.URI
@@ -22,7 +23,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val nodeInstallationPath: DirectoryProperty
     }
 
-    fun provision(fileOperations: FileOperations, nodeVersion: String): NodePath {
+    fun provision(archiveOperations: ArchiveOperations, fileSystemOperations: FileSystemOperations, nodeVersion: String): NodePath {
         val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
             if (!it.exists()) {
                 it.mkdirs()
@@ -48,7 +49,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
             val client = HttpClient.newHttpClient()
             client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
             // TODO verify using checksum
-            fileOperations.unpack(dist.toPath(), nodeCacheDir.toPath())
+            unpack(archiveOperations, fileSystemOperations, dist.toPath(), nodeCacheDir.toPath())
             dist.delete()
         }
 
@@ -66,12 +67,17 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         )
     }
 
-    private fun FileOperations.unpack(archiveFile: Path, installationDir: Path): Path {
+    private fun unpack(
+        archiveOperations: ArchiveOperations,
+        fileSystemOperations: FileSystemOperations,
+        archiveFile: Path,
+        installationDir: Path
+    ): Path {
         val fileTree: FileTree = when(nodeBinaryType.ext) {
-            Zip -> zipTree(archiveFile)
-            else -> tarTree(archiveFile)
+            Zip -> archiveOperations.zipTree(archiveFile)
+            else -> archiveOperations.tarTree(archiveFile)
         }
-        copy {
+        fileSystemOperations.copy {
             from(fileTree)
             into(installationDir)
         }
