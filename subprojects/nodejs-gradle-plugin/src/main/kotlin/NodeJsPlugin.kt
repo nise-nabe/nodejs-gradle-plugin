@@ -10,8 +10,8 @@ import com.nisecoder.gradle.plugin.nodejs.task.NpmVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 
 @Suppress("unused")
