@@ -1,5 +1,6 @@
 package com.nisecoder.gradle.plugin.nodejs
 
+import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryArchiveType.Zip
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryPathResolver
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryType
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryTypeSelector
@@ -35,7 +36,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val fileName = nodeBinaryType.let {
             val osName = it.osName
             val arch = it.arch
-            val ext = it.ext
+            val ext = it.ext.value
             "node-$nodeVersion-$osName-$arch.$ext"
         }
 
@@ -66,11 +67,9 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     }
 
     private fun FileOperations.unpack(archiveFile: Path, installationDir: Path): Path {
-        val ext = nodeBinaryType.ext
-        val fileTree: FileTree = if (ext == "zip") {
-            zipTree(archiveFile)
-        } else {
-            tarTree(archiveFile)
+        val fileTree: FileTree = when(nodeBinaryType.ext) {
+            Zip -> zipTree(archiveFile)
+            else -> tarTree(archiveFile)
         }
         copy {
             from(fileTree)
