@@ -1,10 +1,10 @@
 package com.nisecoder.gradle.plugin.nodejs.task
 
 abstract class CorepackEnableTask: CorepackTask() {
-    override fun setupArgs() {
-        execSpec.args("enable")
+    override fun prepareArgs() {
+        args("enable")
 
         // workaround for windows: corepack will discover `corepack.exe`
-        execSpec.args("--install-directory", nodePath.binDir)
+        args("--install-directory", nodePath.binDir.toString())
     }
 }

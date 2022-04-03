@@ -9,9 +9,10 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.DefaultExecSpec
 import org.gradle.process.internal.ExecActionFactory
+import java.nio.file.Path
 import javax.inject.Inject
 
-abstract class AbstractNodeTask: DefaultTask() {
+abstract class AbstractExecTask: DefaultTask() {
     @get:Internal
     abstract val execResult: Property<ExecResult>
 
@@ -22,10 +23,25 @@ abstract class AbstractNodeTask: DefaultTask() {
     abstract val execActionFactory: ExecActionFactory
 
     @get:Internal
-    protected val execSpec: DefaultExecSpec by lazy { objects.newInstance() }
+    protected abstract val executable: Path
+
+    private val args: MutableList<String> = mutableListOf()
+
+    protected fun args(vararg arg: String) {
+        this.args.addAll(arg)
+    }
+
+    protected open fun prepareArgs() {
+    }
 
     @TaskAction
     open fun exec() {
+        prepareArgs()
+
+        val execSpec: DefaultExecSpec = objects.newInstance()
+        execSpec.executable = executable.toString()
+        execSpec.args = args
+
         val action = execActionFactory.newExecAction()
         execSpec.copyTo(action)
         execResult.set(action.execute())
