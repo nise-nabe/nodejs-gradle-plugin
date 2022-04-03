@@ -2,6 +2,9 @@ package com.nisecoder.gradle.plugin.nodejs.binary
 
 import java.nio.file.Path
 
+/**
+ * NOTE: gradle tarTree is not support symlink, so tools will use js file directly
+ */
 class NodeBinaryPathResolver(
     val installPath: Path,
     private val nodeBinaryType: NodeBinaryType,
