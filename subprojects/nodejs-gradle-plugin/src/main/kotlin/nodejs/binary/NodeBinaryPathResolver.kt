@@ -1,4 +1,4 @@
-package com.nisecoder.gradle.plugin.nodejs
+package com.nisecoder.gradle.plugin.nodejs.binary
 
 import java.nio.file.Path
 

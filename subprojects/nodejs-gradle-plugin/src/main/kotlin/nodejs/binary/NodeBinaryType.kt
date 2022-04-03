@@ -1,8 +1,9 @@
-package com.nisecoder.gradle.plugin.nodejs
+package com.nisecoder.gradle.plugin.nodejs.binary
 
 /**
  * see [nodejs releases](https://nodejs.org/dist/latest/)
  */
+@Suppress("unused")
 enum class NodeBinaryType(val osName: String, val arch: String, val ext: String) {
     Win32("win", "x86", "zip"),
     Win64("win", "x64", "zip"),

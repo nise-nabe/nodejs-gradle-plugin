@@ -1,5 +1,5 @@
 @file:Suppress("unused")
-package com.nisecoder.gradle.plugin.nodejs
+package com.nisecoder.gradle.plugin.nodejs.binary
 
 object OsDetect {
     @Suppress("MemberVisibilityCanBePrivate")

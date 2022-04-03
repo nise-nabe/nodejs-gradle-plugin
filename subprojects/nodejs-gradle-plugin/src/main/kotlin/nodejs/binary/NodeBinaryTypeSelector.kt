@@ -1,5 +1,6 @@
-package com.nisecoder.gradle.plugin.nodejs
+package com.nisecoder.gradle.plugin.nodejs.binary
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 object NodeBinaryTypeSelector {
     fun select(): NodeBinaryType {
         return when {

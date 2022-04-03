@@ -1,9 +1,11 @@
 package com.nisecoder.gradle.plugin.nodejs
 
+import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryPathResolver
+import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryType
+import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryTypeSelector
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.internal.file.FileOperations
-import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.net.URI
@@ -13,8 +15,9 @@ import java.net.http.HttpResponse
 import java.nio.file.Path
 
 abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Params> {
+    private val nodeBinaryType: NodeBinaryType = NodeBinaryTypeSelector.select()
+
     interface Params: BuildServiceParameters {
-        val nodeBinaryType: Property<NodeBinaryType>
         val nodeCachePath: DirectoryProperty
     }
 
@@ -24,12 +27,12 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
                 it.mkdirs()
             }
         }
-        val installationDirName = parameters.nodeBinaryType.get().let {
+        val installationDirName = nodeBinaryType.let {
             val osName = it.osName
             val arch = it.arch
             "node-$nodeVersion-$osName-$arch"
         }
-        val fileName = parameters.nodeBinaryType.get().let {
+        val fileName = nodeBinaryType.let {
             val osName = it.osName
             val arch = it.arch
             val ext = it.ext
@@ -48,7 +51,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
             dist.delete()
         }
 
-        val resolver = NodeBinaryPathResolver(installationDir, parameters.nodeBinaryType.get())
+        val resolver = NodeBinaryPathResolver(installationDir, nodeBinaryType)
         return resolver.toNodePath()
     }
 
@@ -63,7 +66,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     }
 
     private fun FileOperations.unpack(archiveFile: Path, installationDir: Path): Path {
-        val ext = parameters.nodeBinaryType.get().ext
+        val ext = nodeBinaryType.ext
         val fileTree: FileTree = if (ext == "zip") {
             zipTree(archiveFile)
         } else {
