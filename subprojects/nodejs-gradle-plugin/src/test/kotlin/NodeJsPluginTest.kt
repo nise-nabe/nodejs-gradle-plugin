@@ -1,7 +1,8 @@
 package com.nisecoder.gradle.plugin
 
+import com.nisecoder.gradle.plugin.utils.splitLine
 import com.nisecoder.gradle.plugin.utils.writeKotlin
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.BeforeEach
@@ -42,6 +43,32 @@ internal class NodeJsPluginTest {
 
         val taskResult = buildResult.task(":help")
         assertNotNull(taskResult)
-        Assertions.assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    fun configurationCache() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments("--configuration-cache", ":help")
+            .build()
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments("--configuration-cache", ":help")
+            .build()
+
+        val taskResult = buildResult.task(":help")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.splitLine()).contains("Reusing configuration cache.")
     }
 }

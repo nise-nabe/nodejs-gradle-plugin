@@ -1,5 +1,6 @@
 package com.nisecoder.gradle.plugin.nodejs.task
 
+import com.nisecoder.gradle.plugin.utils.splitLine
 import com.nisecoder.gradle.plugin.utils.writeKotlin
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
@@ -135,5 +136,4 @@ internal class VersionTaskTest {
         assertThat(buildResult.output.splitLine()).contains(PNPM_VERSION)
     }
 
-    private fun String.splitLine() = split(System.lineSeparator()).map { it.trim() }
 }
