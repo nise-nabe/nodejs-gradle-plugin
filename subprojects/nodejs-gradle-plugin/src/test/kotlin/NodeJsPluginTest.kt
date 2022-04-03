@@ -1,5 +1,6 @@
 package com.nisecoder.gradle.plugin
 
+import com.nisecoder.gradle.plugin.utils.writeKotlin
 import org.assertj.core.api.Assertions
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.test.assertNotNull
 
-internal class CorepackTaskTest {
+internal class NodeJsPluginTest {
     @TempDir
     private lateinit var testProjectDir: File
 
@@ -26,7 +27,7 @@ internal class CorepackTaskTest {
     }
 
     @Test
-    fun corepackEnable() {
+    fun applyTest() {
         buildFile.writeKotlin("""
           plugins {
             id("com.nisecoder.nodejs")
@@ -36,29 +37,10 @@ internal class CorepackTaskTest {
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
-            .withArguments(":corepackEnable")
+            .withArguments(":help")
             .build()
 
-        val taskResult = buildResult.task(":corepackEnable")
-        assertNotNull(taskResult)
-        Assertions.assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-    }
-
-    @Test
-    fun corepackDisable() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
-        val buildResult = GradleRunner.create()
-            .withProjectDir(testProjectDir)
-            .withPluginClasspath()
-            .withArguments(":corepackDisable")
-            .build()
-
-        val taskResult = buildResult.task(":corepackDisable")
+        val taskResult = buildResult.task(":help")
         assertNotNull(taskResult)
         Assertions.assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
     }

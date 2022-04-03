@@ -1,5 +1,6 @@
-package com.nisecoder.gradle.plugin
+package com.nisecoder.gradle.plugin.nodejs.task
 
+import com.nisecoder.gradle.plugin.utils.writeKotlin
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome

@@ -1,4 +1,4 @@
-package com.nisecoder.gradle.plugin
+package com.nisecoder.gradle.plugin.utils
 
 import org.intellij.lang.annotations.Language
 import java.io.File
