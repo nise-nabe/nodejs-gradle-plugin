@@ -4,12 +4,11 @@ import com.nisecoder.gradle.plugin.nodejs.NodePath
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
 import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Internal
 import java.nio.file.Path
 import javax.inject.Inject
 
-abstract class NodeTask: Exec() {
+abstract class NodeTask: AbstractNodeTask() {
     init {
         group = "nodejs"
     }

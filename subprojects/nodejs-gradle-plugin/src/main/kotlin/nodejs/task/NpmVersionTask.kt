@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 abstract class NpmVersionTask: NodeTask() {
     @TaskAction
     override fun exec() {
-        commandLine(nodePath.npm, "-v")
+        execSpec.commandLine(nodePath.npm, "-v")
 
         super.exec()
     }

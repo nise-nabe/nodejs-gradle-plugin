@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 abstract class CorepackTask: NodeTask() {
     @TaskAction
     override fun exec() {
-        commandLine(nodePath.corepack.toString())
+        execSpec.commandLine(nodePath.corepack.toString())
         setupArgs()
         super.exec()
     }
@@ -13,7 +13,7 @@ abstract class CorepackTask: NodeTask() {
     /**
      * use args() to execute corepack
      */
-    open fun setupArgs() {
+    protected open fun setupArgs() {
 
     }
 }
