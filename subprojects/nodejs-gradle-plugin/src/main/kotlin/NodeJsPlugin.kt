@@ -3,6 +3,7 @@ package com.nisecoder.gradle.plugin
 import com.nisecoder.gradle.plugin.nodejs.NodeBinaryTypeSelector
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
+import com.nisecoder.gradle.plugin.nodejs.task.AbstractNodeTask
 import com.nisecoder.gradle.plugin.nodejs.task.CorepackEnableTask
 import com.nisecoder.gradle.plugin.nodejs.task.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
@@ -33,6 +34,7 @@ class NodeJsPlugin: Plugin<Project> {
             parameters {
                 nodeBinaryType.set(binaryType)
                 nodeCachePath.set(nodeCacheDir)
+                // not to set node version to use different version for each projects
             }
         }
 
