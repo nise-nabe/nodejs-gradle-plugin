@@ -70,7 +70,7 @@ class NodeJsPlugin: Plugin<Project> {
             prepare()
         }
 
-        // yar tasks
+        // yarn tasks
         tasks {
             register<YarnVersionTask>("yarnVersion") {
                 prepare()
