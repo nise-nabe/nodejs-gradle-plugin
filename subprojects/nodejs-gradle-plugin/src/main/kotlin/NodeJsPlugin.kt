@@ -7,6 +7,7 @@ import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
@@ -42,6 +43,14 @@ class NodeJsPlugin: Plugin<Project> {
             }
         }
 
+        // npm tasks
+        tasks {
+            register<NpmVersionTask>("npmVersion") {
+                nodeProvisioningService.set(nodeProvisioningServiceProvider)
+                nodeVersion.set(nodeExtension.version)
+            }
+        }
+
         // corepack tasks
         tasks {
             register<CorepackVersionTask>("corepackVersion") {
@@ -49,22 +58,26 @@ class NodeJsPlugin: Plugin<Project> {
                 nodeVersion.set(nodeExtension.version)
             }
 
-            register<CorepackEnableTask>("corepackEnable") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
-            }
             register<CorepackDisableTask>("corepackDisable") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }
         }
 
-        // npm tasks
+        val corepackEnableTask = tasks.register<CorepackEnableTask>("corepackEnable") {
+            nodeProvisioningService.set(nodeProvisioningServiceProvider)
+            nodeVersion.set(nodeExtension.version)
+        }
+
+        // yar tasks
         tasks {
-            register<NpmVersionTask>("npmVersion") {
+            register<YarnVersionTask>("yarnVersion") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
+
+                dependsOn(corepackEnableTask)
             }
+
         }
     }
 }

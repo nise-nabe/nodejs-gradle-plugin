@@ -15,6 +15,7 @@ internal class VersionTaskTest {
         const val NODE_VERSION = "v16.14.2"
         const val NPM_VERSION = "8.5.0"
         const val COREPACK_VERSION = "0.10.0"
+        const val YARN_VERSION = "1.22.15"
     }
 
     @TempDir
@@ -52,6 +53,27 @@ internal class VersionTaskTest {
         assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(NODE_VERSION)
     }
 
+
+    @Test
+    fun npmVersion() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":npmVersion")
+            .build()
+
+        val taskResult = buildResult.task(":npmVersion")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(NPM_VERSION)
+    }
+
     @Test
     fun corepackVersion() {
         buildFile.writeKotlin("""
@@ -73,7 +95,7 @@ internal class VersionTaskTest {
     }
 
     @Test
-    fun npmVersion() {
+    fun yarnVersion() {
         buildFile.writeKotlin("""
           plugins {
             id("com.nisecoder.nodejs")
@@ -83,12 +105,12 @@ internal class VersionTaskTest {
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
-            .withArguments(":npmVersion")
+            .withArguments(":yarnVersion")
             .build()
 
-        val taskResult = buildResult.task(":npmVersion")
+        val taskResult = buildResult.task(":yarnVersion")
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
-        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(NPM_VERSION)
+        assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains(YARN_VERSION)
     }
 }
