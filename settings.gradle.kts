@@ -23,6 +23,8 @@ includeBuild("./build-logic")
 
 include("nodejs-gradle-plugin")
 
+includeBuild("subprojects/sample-project")
+
 for (project in rootProject.children) {
     val projectPath = file("subprojects/${project.name}")
 
