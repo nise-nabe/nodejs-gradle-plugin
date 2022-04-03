@@ -18,7 +18,7 @@ class NodeBinaryPathResolver(
         return if (nodeBinaryType.osName == "win") {
             installPath.resolve("npm.cmd")
         } else {
-            installPath.resolve("bin").resolve("npm")
+            installPath.resolve("lib/node_modules/npm/bin/npm-cli.js")
         }
     }
 
@@ -26,7 +26,7 @@ class NodeBinaryPathResolver(
         return if (nodeBinaryType.osName == "win") {
             installPath.resolve("npx.cmd")
         } else {
-            installPath.resolve("bin").resolve("npx")
+            installPath.resolve("lib/node_modules/npm/bin/npx-cli.js")
         }
     }
 
@@ -34,7 +34,7 @@ class NodeBinaryPathResolver(
         return if (nodeBinaryType.osName == "win") {
             installPath.resolve("corepack.cmd")
         } else {
-            installPath.resolve("bin").resolve("corepack")
+            installPath.resolve("lib/node_modules/corepack/dist/corepack.js")
         }
     }
 }

@@ -83,13 +83,6 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
             from(fileTree)
             into(installationDir)
         }
-        fsOps.copy {
-            from(fileTree.filter { Files.isSymbolicLink(it.toPath()) })
-            eachFile {
-                exclude()
-                Files.copy(Files.readSymbolicLink(file.toPath()), relativePath.getFile(installationDir.toFile()).toPath())
-            }
-        }
         return installationDir
     }
 
