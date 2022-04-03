@@ -5,6 +5,7 @@ import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackEnableTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.base.ProvisionedNodeTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnVersionTask
@@ -35,49 +36,47 @@ class NodeJsPlugin: Plugin<Project> {
             }
         }
 
+        fun ProvisionedNodeTask.prepare() {
+            nodeProvisioningService.set(nodeProvisioningServiceProvider)
+            nodeVersion.set(nodeExtension.version)
+        }
+
         // node tasks
         tasks {
             register<NodeVersionTask>("nodeVersion") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
+                prepare()
             }
         }
 
         // npm tasks
         tasks {
             register<NpmVersionTask>("npmVersion") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
+                prepare()
             }
         }
 
         // corepack tasks
         tasks {
             register<CorepackVersionTask>("corepackVersion") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
+                prepare()
             }
 
             register<CorepackDisableTask>("corepackDisable") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
+                prepare()
             }
         }
 
         val corepackEnableTask = tasks.register<CorepackEnableTask>("corepackEnable") {
-            nodeProvisioningService.set(nodeProvisioningServiceProvider)
-            nodeVersion.set(nodeExtension.version)
+            prepare()
         }
 
         // yar tasks
         tasks {
             register<YarnVersionTask>("yarnVersion") {
-                nodeProvisioningService.set(nodeProvisioningServiceProvider)
-                nodeVersion.set(nodeExtension.version)
+                prepare()
 
                 dependsOn(corepackEnableTask)
             }
-
         }
     }
 }
