@@ -1,4 +1,6 @@
-package com.nisecoder.gradle.plugin.nodejs.task
+package com.nisecoder.gradle.plugin.nodejs.task.npm
+
+import com.nisecoder.gradle.plugin.nodejs.task.base.ProvisionedNodeTask
 
 abstract class NpmTask: ProvisionedNodeTask() {
     init {

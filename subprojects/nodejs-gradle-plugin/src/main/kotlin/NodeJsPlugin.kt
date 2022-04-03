@@ -2,10 +2,10 @@ package com.nisecoder.gradle.plugin
 
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
-import com.nisecoder.gradle.plugin.nodejs.task.CorepackEnableTask
-import com.nisecoder.gradle.plugin.nodejs.task.CorepackVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackEnableTask
+import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
-import com.nisecoder.gradle.plugin.nodejs.task.NpmVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create

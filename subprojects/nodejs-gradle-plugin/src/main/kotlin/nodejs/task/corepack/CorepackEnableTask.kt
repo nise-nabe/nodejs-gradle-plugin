@@ -1,4 +1,4 @@
-package com.nisecoder.gradle.plugin.nodejs.task
+package com.nisecoder.gradle.plugin.nodejs.task.corepack
 
 abstract class CorepackEnableTask: CorepackTask() {
     override fun prepareArgs() {

@@ -1,4 +1,4 @@
-package com.nisecoder.gradle.plugin.nodejs.task
+package com.nisecoder.gradle.plugin.nodejs.task.base
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.model.ObjectFactory
