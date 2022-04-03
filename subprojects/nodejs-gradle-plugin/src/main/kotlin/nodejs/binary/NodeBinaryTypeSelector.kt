@@ -19,7 +19,7 @@ object NodeBinaryTypeSelector {
                 }
             }
             OsDetect.isUnix() -> {
-                // TODO support armv7, armv8
+                // TODO support armV7, armV8
                 return NodeBinaryType.Linux64
             }
             else -> throw IllegalStateException("Unsupported OS")
