@@ -14,6 +14,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.nio.file.Files
 import java.nio.file.Path
 import javax.inject.Inject
 
@@ -81,6 +82,13 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         fsOps.copy {
             from(fileTree)
             into(installationDir)
+        }
+        fsOps.copy {
+            from(fileTree.filter { Files.isSymbolicLink(it.toPath()) })
+            eachFile {
+                exclude()
+                Files.copy(Files.readSymbolicLink(file.toPath()), relativePath.getFile(installationDir.toFile()).toPath())
+            }
         }
         return installationDir
     }
