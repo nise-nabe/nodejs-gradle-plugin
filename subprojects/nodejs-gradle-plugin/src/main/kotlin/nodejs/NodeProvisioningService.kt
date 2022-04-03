@@ -67,6 +67,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     private fun NodeBinaryPathResolver.toNodePath(): NodePath {
         return NodePath(
             installPath,
+            resolveBinPath(),
             resolveNode(),
             resolveNpm(),
             resolveNpx(),

@@ -5,6 +5,6 @@ abstract class CorepackEnableTask: CorepackTask() {
         execSpec.args("enable")
 
         // workaround for windows: corepack will discover `corepack.exe`
-        execSpec.args("--install-directory", nodePath.installDir)
+        execSpec.args("--install-directory", nodePath.binDir)
     }
 }

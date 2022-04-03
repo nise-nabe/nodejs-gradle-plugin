@@ -9,6 +9,14 @@ class NodeBinaryPathResolver(
     val installPath: Path,
     private val nodeBinaryType: NodeBinaryType,
 ) {
+    fun resolveBinPath(): Path {
+        return if (nodeBinaryType.osName == "win") {
+            installPath
+        } else {
+            installPath.resolve("bin")
+        }
+    }
+
     fun resolveNode(): Path {
         return if (nodeBinaryType.osName == "win") {
             installPath.resolve("node.exe")

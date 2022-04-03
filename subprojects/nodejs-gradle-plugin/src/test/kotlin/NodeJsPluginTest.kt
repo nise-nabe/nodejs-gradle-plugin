@@ -67,6 +67,25 @@ internal class NodeJsPluginTest {
     }
 
     @Test
+    fun corepackEnable() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":corepackEnable")
+            .build()
+
+        val taskResult = buildResult.task(":corepackEnable")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+    }
+
+    @Test
     fun npmVersion() {
         buildFile.writeKotlin("""
           plugins {

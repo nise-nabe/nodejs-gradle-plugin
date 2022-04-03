@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 data class NodePath(
     val installDir: Path,
+    val binDir: Path,
     val node: Path,
     val npm: Path,
     val npx: Path,
