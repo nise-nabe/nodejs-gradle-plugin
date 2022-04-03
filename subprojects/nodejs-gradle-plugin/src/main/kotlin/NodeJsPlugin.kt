@@ -58,6 +58,8 @@ class NodeJsPlugin: Plugin<Project> {
             }
             register<NpmInstallTask>("npmInstall") {
                 prepare()
+
+                packageLockFile.set(layout.projectDirectory.file("package-lock.json"))
             }
         }
 
@@ -88,6 +90,8 @@ class NodeJsPlugin: Plugin<Project> {
                 prepare()
 
                 dependsOn(corepackEnableTask)
+
+                yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
             }
         }
 
