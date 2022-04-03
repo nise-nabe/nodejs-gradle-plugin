@@ -15,6 +15,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Path
+import javax.inject.Inject
 
 abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Params> {
     private val nodeBinaryType: NodeBinaryType = NodeBinaryTypeSelector.select()
@@ -23,7 +24,12 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val nodeInstallationPath: DirectoryProperty
     }
 
-    fun provision(archiveOperations: ArchiveOperations, fileSystemOperations: FileSystemOperations, nodeVersion: String): NodePath {
+    @get:Inject
+    abstract val archiveOps: ArchiveOperations
+    @get:Inject
+    abstract val fsOps: FileSystemOperations
+
+    fun provision(nodeVersion: String): NodePath {
         val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
             if (!it.exists()) {
                 it.mkdirs()
@@ -49,7 +55,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
             val client = HttpClient.newHttpClient()
             client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
             // TODO verify using checksum
-            unpack(archiveOperations, fileSystemOperations, dist.toPath(), nodeCacheDir.toPath())
+            unpack(dist.toPath(), nodeCacheDir.toPath())
             dist.delete()
         }
 
@@ -67,17 +73,12 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         )
     }
 
-    private fun unpack(
-        archiveOperations: ArchiveOperations,
-        fileSystemOperations: FileSystemOperations,
-        archiveFile: Path,
-        installationDir: Path
-    ): Path {
+    private fun unpack(archiveFile: Path, installationDir: Path): Path {
         val fileTree: FileTree = when(nodeBinaryType.ext) {
-            Zip -> archiveOperations.zipTree(archiveFile)
-            else -> archiveOperations.tarTree(archiveFile)
+            Zip -> archiveOps.zipTree(archiveFile)
+            else -> archiveOps.tarTree(archiveFile)
         }
-        fileSystemOperations.copy {
+        fsOps.copy {
             from(fileTree)
             into(installationDir)
         }
