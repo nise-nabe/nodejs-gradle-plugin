@@ -81,7 +81,6 @@ internal class NodeJsPluginTest {
             .build()
 
         val taskResult = buildResult.task(":npmVersion")
-        println(buildResult.output)
         assertNotNull(taskResult)
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
         assertThat(buildResult.output.split(System.lineSeparator()).map { it.trim() }).contains("8.5.0")
