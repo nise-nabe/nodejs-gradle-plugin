@@ -35,15 +35,24 @@ class NodeJsPlugin: Plugin<Project> {
             }
         }
 
+        // node tasks
         tasks {
             register<NodeVersionTask>("nodeVersion") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }
+        }
+
+        // corepack tasks
+        tasks {
             register<CorepackVersionTask>("corepackVersion") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
             }
+        }
+
+        // npm tasks
+        tasks {
             register<NpmVersionTask>("npmVersion") {
                 nodeProvisioningService.set(nodeProvisioningServiceProvider)
                 nodeVersion.set(nodeExtension.version)
