@@ -4,6 +4,7 @@ import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryArchiveType.Zip
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryPathResolver
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryType
 import com.nisecoder.gradle.plugin.nodejs.binary.NodeBinaryTypeSelector
+import org.gradle.api.GradleException
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
@@ -55,7 +56,10 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
             val uri = URI.create("https://nodejs.org/dist/$version/$fileName")
             val request = HttpRequest.newBuilder(uri).GET().build()
             val client = HttpClient.newHttpClient()
-            client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
+            val response = client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
+            if (response.statusCode() != 200) {
+                throw GradleException("node $version is not found. Please check https://nodejs.org/en/download/releases/")
+            }
             // TODO verify using checksum
             unpack(dist.toPath(), nodeCacheDir.toPath())
             dist.delete()
