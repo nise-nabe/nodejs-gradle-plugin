@@ -116,4 +116,30 @@ internal class ConfiguredVersionTaskTest {
         assertThat(buildResult.output.splitLine()).contains(PNPM_VERSION)
     }
 
+
+    @Test
+    fun invalidVersion() {
+        buildFile.writeKotlin("""
+              plugins {
+                  id("com.nisecoder.nodejs")
+              }
+ 
+              nodejs{
+                // version should start `v`
+                nodeVersion("16.14.2")
+              }
+            """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments("nodeVersion")
+            .buildAndFail()
+
+        val taskResult = buildResult.task(":nodeVersion")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.FAILED)
+        val errorMessage = "> node 16.14.2 is not found. Please check https://nodejs.org/en/download/releases/"
+        assertThat(buildResult.output.splitLine()).contains(errorMessage)
+    }
 }
