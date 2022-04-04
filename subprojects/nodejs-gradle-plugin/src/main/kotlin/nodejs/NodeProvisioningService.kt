@@ -30,7 +30,9 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     @get:Inject
     abstract val fsOps: FileSystemOperations
 
-    fun provision(nodeVersion: String): NodePath {
+    fun provision(nodeVersion: NodeVersion): NodePath {
+        val version = nodeVersion.fixed.get()
+
         val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
             if (!it.exists()) {
                 it.mkdirs()
@@ -39,19 +41,19 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val installationDirName = nodeBinaryType.let {
             val osName = it.osName
             val arch = it.arch
-            "node-$nodeVersion-$osName-$arch"
+            "node-$version-$osName-$arch"
         }
         val fileName = nodeBinaryType.let {
             val osName = it.osName
             val arch = it.arch
             val ext = it.ext.value
-            "node-$nodeVersion-$osName-$arch.$ext"
+            "node-$version-$osName-$arch.$ext"
         }
 
         val installationDir = nodeCacheDir.resolve(installationDirName).toPath()
         if (!installationDir.toFile().exists()) {
             val dist = nodeCacheDir.resolve(fileName)
-            val uri = URI.create("https://nodejs.org/dist/$nodeVersion/$fileName")
+            val uri = URI.create("https://nodejs.org/dist/$version/$fileName")
             val request = HttpRequest.newBuilder(uri).GET().build()
             val client = HttpClient.newHttpClient()
             client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))

@@ -1,10 +1,20 @@
 package com.nisecoder.gradle.plugin.nodejs
 
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.newInstance
 
 
-interface NodeExtension {
-    val nodeVersion: Property<String>
-    val installationDir: DirectoryProperty
+abstract class NodeExtension(objects: ObjectFactory) {
+    val nodeVersion: NodeVersion = objects.newInstance()
+    abstract val installationDir: DirectoryProperty
+
+    fun nodeVersion(nodeVersion: String) {
+        this.nodeVersion.fixed.set(nodeVersion)
+    }
+}
+
+interface NodeVersion {
+    val fixed: Property<String>
 }

@@ -43,7 +43,7 @@ internal class ConfiguredVersionTaskTest {
           }
           
           nodejs {
-            nodeVersion.set("v17.8.0")
+            nodeVersion("v17.8.0")
           }
         """.trimIndent())
 
@@ -68,7 +68,7 @@ internal class ConfiguredVersionTaskTest {
           }
 
           nodejs {
-            nodeVersion.set("v17.8.0")
+            nodeVersion("v17.8.0")
           }
         """.trimIndent())
 
@@ -92,7 +92,7 @@ internal class ConfiguredVersionTaskTest {
           }
 
           nodejs {
-            nodeVersion.set("v17.8.0")
+            nodeVersion("v17.8.0")
           }
         """.trimIndent())
 
@@ -116,7 +116,7 @@ internal class ConfiguredVersionTaskTest {
           }
 
           nodejs {
-            nodeVersion.set("v17.8.0")
+            nodeVersion("v17.8.0")
           }
         """.trimIndent())
 
@@ -140,7 +140,7 @@ internal class ConfiguredVersionTaskTest {
           }
 
           nodejs {
-            nodeVersion.set("v17.8.0")
+            nodeVersion("v17.8.0")
           }
         """.trimIndent())
 
