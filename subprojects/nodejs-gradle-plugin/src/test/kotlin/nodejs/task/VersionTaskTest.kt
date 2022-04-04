@@ -31,18 +31,18 @@ internal class VersionTaskTest {
     @BeforeEach
     fun setup() {
         settingsFile = testProjectDir.resolve("settings.gradle.kts")
-        buildFile = testProjectDir.resolve("build.gradle.kts")
+        buildFile = testProjectDir.resolve("build.gradle.kts").apply {
+            writeKotlin("""
+              plugins {
+                  id("com.nisecoder.nodejs")
+              }
+            """.trimIndent())
+        }
         packageJson = testProjectDir.resolve("package.json")
     }
 
     @Test
     fun nodeVersion() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
@@ -58,12 +58,6 @@ internal class VersionTaskTest {
 
     @Test
     fun npmVersion() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
@@ -78,12 +72,6 @@ internal class VersionTaskTest {
 
     @Test
     fun corepackVersion() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
@@ -98,12 +86,6 @@ internal class VersionTaskTest {
 
     @Test
     fun yarnVersion() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
@@ -118,12 +100,6 @@ internal class VersionTaskTest {
 
     @Test
     fun pnpmVersion() {
-        buildFile.writeKotlin("""
-          plugins {
-            id("com.nisecoder.nodejs")
-          }
-        """.trimIndent())
-
         val buildResult = GradleRunner.create()
             .withProjectDir(testProjectDir)
             .withPluginClasspath()
@@ -135,5 +111,4 @@ internal class VersionTaskTest {
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
         assertThat(buildResult.output.splitLine()).contains(PNPM_VERSION)
     }
-
 }
