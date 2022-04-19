@@ -99,14 +99,14 @@ class NodeJsPlugin: Plugin<Project> {
                 yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
             }
 
-            val parser = Json { ignoreUnknownKeys = true }
-            val packageJson = file("package.json").inputStream().use {
+            file("package.json").takeIf { it.isFile }?.inputStream()?.use {
+                val parser = Json { ignoreUnknownKeys = true }
                 parser.decodeFromStream<PackageJson>(it)
-            }
-
-            packageJson.scripts.forEach { (t, _) ->
-                register<YarnScriptTask>("yarn${t.capitalize()}") {
-                    script.set(t)
+            }?.let {
+                it.scripts.forEach { (t, _) ->
+                    register<YarnScriptTask>("yarn${t.capitalize()}") {
+                        script.set(t)
+                    }
                 }
             }
         }
