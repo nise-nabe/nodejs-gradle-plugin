@@ -2,6 +2,7 @@ package com.nisecoder.gradle.plugin
 
 import com.nisecoder.gradle.plugin.nodejs.NodeExtension
 import com.nisecoder.gradle.plugin.nodejs.NodeProvisioningService
+import com.nisecoder.gradle.plugin.nodejs.lib.PackageJson
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackEnableTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.NodeVersionTask
@@ -11,7 +12,11 @@ import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmInstallTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnInstallTask
+import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnScriptTask
+import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnVersionTask
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
@@ -92,6 +97,17 @@ class NodeJsPlugin: Plugin<Project> {
                 dependsOn(corepackEnableTask)
 
                 yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
+            }
+
+            val parser = Json { ignoreUnknownKeys = true }
+            val packageJson = file("package.json").inputStream().use {
+                parser.decodeFromStream<PackageJson>(it)
+            }
+
+            packageJson.scripts.forEach { (t, _) ->
+                register<YarnScriptTask>("yarn${t.capitalize()}") {
+                    script.set(t)
+                }
             }
         }
 
