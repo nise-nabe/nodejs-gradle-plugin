@@ -12,6 +12,7 @@ plugins {
     `java-gradle-plugin`
 
     kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 pluginBundle {
@@ -37,6 +38,10 @@ idea {
             packagePrefix["src/test/kotlin"] = packageName
         }
     }
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 }
 
 dependencies {
