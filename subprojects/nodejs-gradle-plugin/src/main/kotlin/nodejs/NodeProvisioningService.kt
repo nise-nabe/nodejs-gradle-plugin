@@ -30,6 +30,13 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     @get:Inject
     abstract val fsOps: FileSystemOperations
 
+    /**
+     * provision node.js binary path
+     *
+     * now only supports installing node.js from nodejs.org
+     *
+     * @param nodeVersion version
+     */
     fun provision(nodeVersion: NodeVersion): NodePath {
         val version = nodeVersion.fixed.get()
 
