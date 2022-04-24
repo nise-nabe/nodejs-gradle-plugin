@@ -9,6 +9,7 @@ import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import java.io.File
@@ -25,6 +26,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
 
     interface Params: BuildServiceParameters {
         val nodeInstallationPath: DirectoryProperty
+        val verifyChecksum: Property<Boolean>
     }
 
     @get:Inject
@@ -62,9 +64,11 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         val installationDir = nodeCacheDir.resolve(installationDirName).toPath()
         if (!installationDir.toFile().exists()) {
             val client = HttpClient.newHttpClient()
-            val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName)).also {
+            val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName))
+
+            if (parameters.verifyChecksum.get()) {
                 val expected = client.fetchNodeBinaryChecksum(version, fileName)
-                if (expected != it.digest()) {
+                if (expected != dist.digest()) {
                     throw GradleException("node.js binary checksum mismatch")
                 }
             }
