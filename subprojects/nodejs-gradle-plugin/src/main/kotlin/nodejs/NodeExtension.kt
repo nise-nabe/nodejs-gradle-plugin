@@ -16,5 +16,6 @@ abstract class NodeExtension(objects: ObjectFactory) {
 }
 
 interface NodeVersion {
+    /** should start `v` */
     val fixed: Property<String>
 }

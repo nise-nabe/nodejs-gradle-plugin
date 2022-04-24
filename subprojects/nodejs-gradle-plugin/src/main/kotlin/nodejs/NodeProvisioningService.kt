@@ -11,11 +11,13 @@ import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.FileTree
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import java.io.File
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Path
+import java.security.MessageDigest
 import javax.inject.Inject
 
 abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Params> {
@@ -59,22 +61,69 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
 
         val installationDir = nodeCacheDir.resolve(installationDirName).toPath()
         if (!installationDir.toFile().exists()) {
-            val dist = nodeCacheDir.resolve(fileName)
-            val uri = URI.create("https://nodejs.org/dist/$version/$fileName")
-            val request = HttpRequest.newBuilder(uri).GET().build()
             val client = HttpClient.newHttpClient()
-            val response = client.send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
-            if (response.statusCode() != 200) {
-                throw GradleException("node $version is not found. Please check https://nodejs.org/en/download/releases/")
+            val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName)).also {
+                val expected = client.fetchNodeBinaryChecksum(version, fileName)
+                if (expected != it.digest()) {
+                    throw GradleException("node.js binary checksum mismatch")
+                }
             }
-            // TODO verify using checksum
-            unpack(dist.toPath(), nodeCacheDir.toPath())
-            dist.delete()
+
+            unpack(dist, nodeCacheDir.toPath())
+            dist.toFile().delete()
         }
 
         val resolver = NodeBinaryPathResolver(installationDir, nodeBinaryType)
         return resolver.toNodePath()
     }
+
+    private fun HttpClient.fetchNodeBinary(version: String, fileName: String, dist: File): Path {
+        val uri = URI.create("https://nodejs.org/dist/$version/$fileName")
+        val request = HttpRequest.newBuilder(uri).GET().build()
+        val response = send(request, HttpResponse.BodyHandlers.ofFile(dist.toPath()))
+        if (response.statusCode() != 200) {
+            throw GradleException("node $version is not found. Please check https://nodejs.org/en/download/releases/")
+        }
+        return response.body()
+    }
+
+    private fun HttpClient.fetchNodeBinaryChecksum(version: String, fileName: String): String {
+        val uri = URI.create("https://nodejs.org/dist/$version/SHASUMS256.txt")
+        val checksums = send(
+            HttpRequest.newBuilder(uri).GET().build(),
+            HttpResponse.BodyHandlers.ofString()
+        ).let {
+            if (it.statusCode() != 200) {
+                throw GradleException("fail to get checksum file: uri=$uri")
+            }
+            it.body()
+        }
+
+        return checksums.lines()
+            .map { it.split(" +".toRegex()) }
+            .filter { it.size == 2 }
+            .map { it[0] to it[1] }
+            .first { it.second == fileName }
+            .first
+    }
+
+    private fun Path.digest(): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+
+        toFile().inputStream().use {
+            val buffer = ByteArray(1024)
+            var read = it.read(buffer)
+            while (read > -1) {
+                digest.update(buffer, 0, read)
+                read = it.read(buffer)
+            }
+        }
+
+        fun ByteArray.convertToHex() = joinToString("") { "%02x".format(it) }
+
+        return digest.digest().convertToHex()
+    }
+
 
     private fun NodeBinaryPathResolver.toNodePath(): NodePath {
         return NodePath(
