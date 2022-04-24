@@ -15,6 +15,16 @@ plugins {
     kotlin("plugin.serialization")
 }
 
+group = "com.nisecoder.gradle"
+
+// inject in GitHub Action Publish Workflow
+val publishVersion: String? by project
+version = if (publishVersion?.isNotEmpty() == true) {
+    publishVersion!!.replaceFirst("refs/tags/v", "")
+} else {
+    "1.0-SNAPSHOT"
+}
+
 pluginBundle {
     website = "https://github.com/nise-nabe/nodejs-gradle-plugin"
     vcsUrl = "https://github.com/nise-nabe/nodejs-gradle-plugin"
@@ -54,4 +64,14 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "gitHubPackages"
+            url = uri("https://maven.pkg.github.com/nise-nabe/nodejs-gradle-plugin")
+            credentials(PasswordCredentials::class)
+        }
+    }
 }
