@@ -40,6 +40,7 @@ class NodeJsPlugin: Plugin<Project> {
         val nodeProvisioningServiceProvider = gradle.sharedServices.registerIfAbsent("nodeProvisioning", NodeProvisioningService::class) {
             parameters {
                 nodeInstallationPath.set(nodeExtension.installationDir)
+                verifyChecksum.set(true)
                 // not to set node version to use different version for each projects
             }
         }
