@@ -26,6 +26,7 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
 
     interface Params: BuildServiceParameters {
         val nodeInstallationPath: DirectoryProperty
+        /** if true, node.js binary file check the checksum */
         val verifyChecksum: Property<Boolean>
     }
 
