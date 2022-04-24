@@ -66,16 +66,18 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
         if (!installationDir.toFile().exists()) {
             val client = HttpClient.newHttpClient()
             val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName))
-
-            if (parameters.verifyChecksum.get()) {
-                val expected = client.fetchNodeBinaryChecksum(version, fileName)
-                if (expected != dist.digest()) {
-                    throw GradleException("node.js binary checksum mismatch")
+            try {
+                if (parameters.verifyChecksum.get()) {
+                    val expected = client.fetchNodeBinaryChecksum(version, fileName)
+                    if (expected != dist.digest()) {
+                        throw GradleException("node.js binary checksum mismatch")
+                    }
                 }
-            }
 
-            unpack(dist, nodeCacheDir.toPath())
-            dist.toFile().delete()
+                unpack(dist, nodeCacheDir.toPath())
+            } finally {
+                dist.toFile().delete()
+            }
         }
 
         val resolver = NodeBinaryPathResolver(installationDir, nodeBinaryType)
