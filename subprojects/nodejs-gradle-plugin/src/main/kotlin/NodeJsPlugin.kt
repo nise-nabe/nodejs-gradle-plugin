@@ -92,7 +92,10 @@ class NodeJsPlugin: Plugin<Project> {
                 parser.decodeFromStream<PackageJson>(it)
             }?.let {
                 it.scripts.forEach { (t, _) ->
-                    register<YarnScriptTask>("yarn${nodeExtension.scriptsPrefix.get()}${t.capitalize()}") {
+                    val scriptPrefix = nodeExtension.scriptsPrefix.get().capitalize()
+                    val scriptTaskName = t.capitalize()
+                    val taskName = "yarn$scriptPrefix$scriptTaskName"
+                    register<YarnScriptTask>(taskName) {
                         script.set(t)
                     }
                 }
