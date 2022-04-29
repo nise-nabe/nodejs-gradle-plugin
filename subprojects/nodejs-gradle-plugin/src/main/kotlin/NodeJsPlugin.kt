@@ -37,6 +37,7 @@ class NodeJsPlugin: Plugin<Project> {
         val nodeExtension = extensions.create<NodeExtension>("nodejs").also {
             it.nodeVersion.fixed.convention("v16.14.2")
             it.installationDir.set(gradle.gradleUserHomeDir.resolve("nodejs"))
+            it.scriptsPrefix.set("")
         }
 
         val nodeProvisioningServiceProvider = gradle.sharedServices.registerIfAbsent("nodeProvisioning", NodeProvisioningService::class) {
@@ -91,7 +92,7 @@ class NodeJsPlugin: Plugin<Project> {
                 parser.decodeFromStream<PackageJson>(it)
             }?.let {
                 it.scripts.forEach { (t, _) ->
-                    register<YarnScriptTask>("yarn${t.capitalize()}") {
+                    register<YarnScriptTask>("yarn${nodeExtension.scriptsPrefix.get()}${t.capitalize()}") {
                         script.set(t)
                     }
                 }
