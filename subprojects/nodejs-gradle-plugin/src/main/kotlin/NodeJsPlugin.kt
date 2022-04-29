@@ -10,6 +10,7 @@ import com.nisecoder.gradle.plugin.nodejs.task.base.ProvisionedNodeTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmInstallTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmTask
 import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnInstallTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnScriptTask
@@ -23,6 +24,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
+import org.gradle.kotlin.dsl.withType
 
 @Suppress("unused")
 class NodeJsPlugin: Plugin<Project> {
@@ -45,58 +47,42 @@ class NodeJsPlugin: Plugin<Project> {
             }
         }
 
-        fun ProvisionedNodeTask.prepare() {
+        tasks.withType<ProvisionedNodeTask>().configureEach {
             nodeProvisioningService.set(nodeProvisioningServiceProvider)
             nodeVersion.set(nodeExtension.nodeVersion)
         }
 
         // node tasks
         tasks {
-            register<NodeVersionTask>("nodeVersion") {
-                prepare()
-            }
+            register<NodeVersionTask>("nodeVersion")
         }
 
         // npm tasks
         tasks {
-            register<NpmVersionTask>("npmVersion") {
-                prepare()
-            }
+            register<NpmVersionTask>("npmVersion")
             register<NpmInstallTask>("npmInstall") {
-                prepare()
-
                 packageLockFile.set(layout.projectDirectory.file("package-lock.json"))
             }
         }
 
         // corepack tasks
         tasks {
-            register<CorepackVersionTask>("corepackVersion") {
-                prepare()
-            }
-
-            register<CorepackDisableTask>("corepackDisable") {
-                prepare()
-            }
+            register<CorepackVersionTask>("corepackVersion")
+            register<CorepackDisableTask>("corepackDisable")
         }
 
-        val corepackEnableTask = tasks.register<CorepackEnableTask>("corepackEnable") {
-            prepare()
-        }
+        val corepackEnableTask = tasks.register<CorepackEnableTask>("corepackEnable")
 
         // yarn tasks
         tasks {
-            register<YarnVersionTask>("yarnVersion") {
-                prepare()
-
+            // yarn need to enable corepack
+            withType<YarnTask>().configureEach {
                 dependsOn(corepackEnableTask)
             }
 
+            register<YarnVersionTask>("yarnVersion")
+
             register<YarnInstallTask>("yarnInstall") {
-                prepare()
-
-                dependsOn(corepackEnableTask)
-
                 yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
             }
 
@@ -106,7 +92,6 @@ class NodeJsPlugin: Plugin<Project> {
             }?.let {
                 it.scripts.forEach { (t, _) ->
                     register<YarnScriptTask>("yarn${t.capitalize()}") {
-                        prepare()
                         script.set(t)
                     }
                 }
@@ -115,9 +100,12 @@ class NodeJsPlugin: Plugin<Project> {
 
         // pnpm tasks
         tasks {
-            register<PnpmVersionTask>("pnpmVersion") {
-                prepare()
+            // pnpm need to enable corepack
+            withType<PnpmTask>().configureEach {
+                dependsOn(corepackEnableTask)
+            }
 
+            register<PnpmVersionTask>("pnpmVersion") {
                 dependsOn(corepackEnableTask)
             }
         }
