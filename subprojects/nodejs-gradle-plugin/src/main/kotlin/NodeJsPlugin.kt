@@ -106,6 +106,7 @@ class NodeJsPlugin: Plugin<Project> {
             }?.let {
                 it.scripts.forEach { (t, _) ->
                     register<YarnScriptTask>("yarn${t.capitalize()}") {
+                        prepare()
                         script.set(t)
                     }
                 }
