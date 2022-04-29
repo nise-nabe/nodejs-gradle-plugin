@@ -54,16 +54,27 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 }
 
-dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation(gradleTestKit())
-    testImplementation(kotlin("test-junit5"))
-    testImplementation("org.assertj:assertj-core:3.22.0")
-}
+testing {
+    @Suppress("UNUSED_VARIABLE", "UnstableApiUsage")
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter("5.8.2")
 
-tasks.test {
-    useJUnitPlatform()
-    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
+            dependencies {
+                implementation(project.dependencies.gradleTestKit())
+                implementation(project.dependencies.kotlin("test-junit5"))
+                implementation("org.assertj:assertj-core:3.22.0")
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
+                    }
+                }
+            }
+        }
+    }
 }
 
 publishing {
