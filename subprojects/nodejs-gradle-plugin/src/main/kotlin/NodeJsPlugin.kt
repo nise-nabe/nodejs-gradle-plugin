@@ -37,6 +37,7 @@ class NodeJsPlugin: Plugin<Project> {
         val nodeExtension = extensions.create<NodeExtension>("nodejs").also {
             it.nodeVersion.fixed.convention("v16.14.2")
             it.installationDir.set(gradle.gradleUserHomeDir.resolve("nodejs"))
+            it.scriptsPrefix.convention("")
         }
 
         val nodeProvisioningServiceProvider = gradle.sharedServices.registerIfAbsent("nodeProvisioning", NodeProvisioningService::class) {
@@ -86,13 +87,19 @@ class NodeJsPlugin: Plugin<Project> {
                 yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
             }
 
-            file("package.json").takeIf { it.isFile }?.inputStream()?.use {
-                val parser = Json { ignoreUnknownKeys = true }
-                parser.decodeFromStream<PackageJson>(it)
-            }?.let {
-                it.scripts.forEach { (t, _) ->
-                    register<YarnScriptTask>("yarn${t.capitalize()}") {
-                        script.set(t)
+            // workaround for configured task prefix
+            afterEvaluate {
+                file("package.json").takeIf { it.isFile }?.inputStream()?.use {
+                    val parser = Json { ignoreUnknownKeys = true }
+                    parser.decodeFromStream<PackageJson>(it)
+                }?.let {
+                    it.scripts.forEach { (t, _) ->
+                        val scriptPrefix = nodeExtension.scriptsPrefix.get().capitalize()
+                        val scriptTaskName = t.capitalize()
+                        val taskName = "yarn$scriptPrefix$scriptTaskName"
+                        register<YarnScriptTask>(taskName) {
+                            script.set(t)
+                        }
                     }
                 }
             }

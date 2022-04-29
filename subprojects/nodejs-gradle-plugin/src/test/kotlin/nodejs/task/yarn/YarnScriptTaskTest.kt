@@ -55,4 +55,35 @@ internal class YarnScriptTaskTest {
         assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
         assertThat(buildResult.output.splitLine()).contains("yarnBuild")
     }
+    @Test
+    fun yarnBuildUsingScriptsWithPrefix() {
+        buildFile.writeKotlin("""
+          plugins {
+            id("com.nisecoder.nodejs")
+          }
+          nodejs {
+            scriptsPrefix.set("script")
+          }         
+
+        """.trimIndent())
+
+        packageJson.writeJson("""
+            { 
+                "scripts": {
+                    "build": "build"
+                }
+            }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments(":tasks")
+            .build()
+
+        val taskResult = buildResult.task(":tasks")
+        assertNotNull(taskResult)
+        assertThat(taskResult.outcome).isIn(TaskOutcome.SUCCESS)
+        assertThat(buildResult.output.splitLine()).contains("yarnScriptBuild")
+    }
 }

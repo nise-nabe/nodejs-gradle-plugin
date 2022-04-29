@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.newInstance
 abstract class NodeExtension(objects: ObjectFactory) {
     val nodeVersion: NodeVersion = objects.newInstance()
     abstract val installationDir: DirectoryProperty
+    abstract val scriptsPrefix: Property<String>
 
     fun nodeVersion(nodeVersion: String) {
         this.nodeVersion.fixed.set(nodeVersion)
