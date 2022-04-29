@@ -10,6 +10,7 @@ import com.nisecoder.gradle.plugin.nodejs.task.base.ProvisionedNodeTask
 import com.nisecoder.gradle.plugin.nodejs.task.corepack.CorepackDisableTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmInstallTask
 import com.nisecoder.gradle.plugin.nodejs.task.npm.NpmVersionTask
+import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmTask
 import com.nisecoder.gradle.plugin.nodejs.task.pnpm.PnpmVersionTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnInstallTask
 import com.nisecoder.gradle.plugin.nodejs.task.yarn.YarnScriptTask
@@ -74,13 +75,14 @@ class NodeJsPlugin: Plugin<Project> {
 
         // yarn tasks
         tasks {
-            register<YarnVersionTask>("yarnVersion") {
+            // yarn need to enable corepack
+            withType<YarnTask>().configureEach {
                 dependsOn(corepackEnableTask)
             }
 
-            register<YarnInstallTask>("yarnInstall") {
-                dependsOn(corepackEnableTask)
+            register<YarnVersionTask>("yarnVersion")
 
+            register<YarnInstallTask>("yarnInstall") {
                 yarnLockFile.set(layout.projectDirectory.file("yarn.lock"))
             }
 
@@ -98,6 +100,11 @@ class NodeJsPlugin: Plugin<Project> {
 
         // pnpm tasks
         tasks {
+            // pnpm need to enable corepack
+            withType<PnpmTask>().configureEach {
+                dependsOn(corepackEnableTask)
+            }
+
             register<PnpmVersionTask>("pnpmVersion") {
                 dependsOn(corepackEnableTask)
             }
