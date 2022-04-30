@@ -35,7 +35,7 @@ class NodeJsPlugin: Plugin<Project> {
      */
     override fun apply(target: Project): Unit = target.run {
         val nodeExtension = extensions.create<NodeExtension>("nodejs").also {
-            it.nodeVersion.fixed.convention("v16.14.2")
+            it.nodeVersion.fixed.convention("v16.15.0")
             it.installationDir.set(gradle.gradleUserHomeDir.resolve("nodejs"))
         }
 

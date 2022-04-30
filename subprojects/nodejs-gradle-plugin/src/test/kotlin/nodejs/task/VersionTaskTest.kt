@@ -13,8 +13,8 @@ import kotlin.test.assertNotNull
 
 internal class VersionTaskTest {
     companion object {
-        const val NODE_VERSION = "v16.14.2"
-        const val NPM_VERSION = "8.5.0"
+        const val NODE_VERSION = "v16.15.0"
+        const val NPM_VERSION = "8.5.5"
         const val COREPACK_VERSION = "0.10.0"
         const val YARN_VERSION = "1.22.15"
         const val PNPM_VERSION = "6.11.0"
