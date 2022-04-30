@@ -12,6 +12,7 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import org.gradle.api.tasks.Internal
 import java.io.File
 import java.net.URI
 import java.net.http.HttpClient
@@ -19,6 +20,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Path
 import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Params> {
@@ -35,6 +37,10 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     @get:Inject
     abstract val fsOps: FileSystemOperations
 
+
+    /** cache to provision for one time each version */
+    private val nodePaths: ConcurrentHashMap<String, NodePath> = ConcurrentHashMap()
+
     /**
      * provision node.js binary path
      *
@@ -45,43 +51,45 @@ abstract class NodeProvisioningService: BuildService<NodeProvisioningService.Par
     fun provision(nodeVersion: NodeVersion): NodePath {
         val version = nodeVersion.fixed.get()
 
-        val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
-            if (!it.exists()) {
-                it.mkdirs()
-            }
-        }
-        val installationDirName = nodeBinaryType.let {
-            val osName = it.osName
-            val arch = it.arch
-            "node-$version-$osName-$arch"
-        }
-        val fileName = nodeBinaryType.let {
-            val osName = it.osName
-            val arch = it.arch
-            val ext = it.ext.value
-            "node-$version-$osName-$arch.$ext"
-        }
-
-        val installationDir = nodeCacheDir.resolve(installationDirName).toPath()
-        if (!installationDir.toFile().exists()) {
-            val client = HttpClient.newHttpClient()
-            val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName))
-            try {
-                if (parameters.verifyChecksum.get()) {
-                    val expected = client.fetchNodeBinaryChecksum(version, fileName)
-                    if (expected != dist.digest()) {
-                        throw GradleException("node.js binary checksum mismatch")
-                    }
+        return nodePaths.getOrPut(version) {
+            val nodeCacheDir = parameters.nodeInstallationPath.get().asFile.also {
+                if (!it.exists()) {
+                    it.mkdirs()
                 }
-
-                unpack(dist, nodeCacheDir.toPath())
-            } finally {
-                dist.toFile().delete()
             }
-        }
+            val installationDirName = nodeBinaryType.let {
+                val osName = it.osName
+                val arch = it.arch
+                "node-$version-$osName-$arch"
+            }
+            val fileName = nodeBinaryType.let {
+                val osName = it.osName
+                val arch = it.arch
+                val ext = it.ext.value
+                "node-$version-$osName-$arch.$ext"
+            }
 
-        val resolver = NodeBinaryPathResolver(installationDir, nodeBinaryType)
-        return resolver.toNodePath()
+            val installationDir = nodeCacheDir.resolve(installationDirName).toPath()
+            if (!installationDir.toFile().exists()) {
+                val client = HttpClient.newHttpClient()
+                val dist = client.fetchNodeBinary(version, fileName, nodeCacheDir.resolve(fileName))
+                try {
+                    if (parameters.verifyChecksum.get()) {
+                        val expected = client.fetchNodeBinaryChecksum(version, fileName)
+                        if (expected != dist.digest()) {
+                            throw GradleException("node.js binary checksum mismatch")
+                        }
+                    }
+
+                    unpack(dist, nodeCacheDir.toPath())
+                } finally {
+                    dist.toFile().delete()
+                }
+            }
+
+            val resolver = NodeBinaryPathResolver(installationDir, nodeBinaryType)
+            return resolver.toNodePath()
+        }
     }
 
     private fun HttpClient.fetchNodeBinary(version: String, fileName: String, dist: File): Path {
