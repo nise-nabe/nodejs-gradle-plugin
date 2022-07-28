@@ -6,7 +6,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.5"
+        id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.6"
         id("com.gradle.plugin-publish") version "1.0.0"
         kotlin("jvm") version embeddedKotlinVersion
         kotlin("plugin.serialization") version embeddedKotlinVersion
